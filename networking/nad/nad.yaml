@@ -3,6 +3,8 @@ kind: NetworkAttachmentDefinition
 metadata:
   name: nad30-network      # change the name here 
   namespace: default
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   config: |
     {
