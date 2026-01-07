@@ -12,5 +12,7 @@ spec:
       "type": "bridge",
       "bridge": "br-vlan30",    # need to change bridge name as per nncp-bridge
       "promiscMode": true,
-      "ipam": {}
+      "ipam": {
+        "type": "static"      
+      }
     }
