@@ -2,6 +2,8 @@ apiVersion: k8s.cni.cncf.io/v1
 kind: NetworkAttachmentDefinition
 metadata:
   name: nad30-network      # change the name here 
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   config: |
     {
