@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-monitoring-config
+  namespace: openshift-monitoring
+data:
+  config.yaml: |
+    prometheusK8s:
+      retention: "15d" # Optional: configure data retention time
+      volumeClaimTemplate:
+        metadata:
+          name: prometheus-pvc # Name of the PVC
+        spec:
+          storageClassName: lvms-vg1   #need to change here
+          resources:
+            requests:
+              storage: 20Gi # e.g., 40Gi  #need to change here
+    alertmanagerMain:
+      volumeClaimTemplate:
+        metadata:
+          name: alertmanager-pvc # Name of the PVC
+        spec:
+          storageClassName: lvms-vg1
+          resources:
+            requests:
+              storage: 5Gi # e.g., 40Gi
