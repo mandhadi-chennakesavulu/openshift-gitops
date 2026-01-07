@@ -4,15 +4,16 @@ metadata:
   name: nad30-network      # change the name here 
   namespace: default
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   config: |
     {
-      "cniVersion": "0.4.0",
+      "cniVersion": "0.3.1",
+      "name": "br-vlan30",
       "type": "bridge",
-      "bridge": "br-vlan30",    # need to change bridge name as per nncp-bridge
+      "bridge": "br-vlan30",   #   need to change bridge name as per nncp-bridge
       "promiscMode": true,
       "ipam": {
-        "type": "static"      
+        "type": "static"
       }
     }
