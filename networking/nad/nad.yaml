@@ -1,0 +1,14 @@
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: nad30-network      # change the name here 
+  namespace: default
+spec:
+  config: |
+    {
+      "cniVersion": "0.4.0",
+      "type": "bridge",
+      "bridge": "br-vlan30",    # need to change bridge name as per nncp-bridge
+      "promiscMode": true,
+      "ipam": {}
+    }
