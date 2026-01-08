@@ -2,8 +2,6 @@ apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
   name: ens224-vlan30
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
 spec:
   desiredState:
     interfaces:
