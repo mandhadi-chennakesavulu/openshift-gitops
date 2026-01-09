@@ -4,14 +4,13 @@ metadata:
   name: etcd-backup
   namespace: openshift-etcd
 spec:
-  schedule: "0 1 * * *"   # Daily at 1 AM
+  schedule: "0 1 * * *"
   concurrencyPolicy: Forbid
-  successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
       template:
         spec:
+          serviceAccountName: etcd-backup-sa   # 👈 THIS LINE
           nodeSelector:
             node-role.kubernetes.io/master: ""
           tolerations:
