@@ -4,7 +4,7 @@ metadata:
   name: etcd-backup
   namespace: openshift-etcd
 spec:
-  schedule: "0 2 * * *"   # Daily at 2 AM
+  schedule: "0 1 * * *"   # Daily at 1 AM
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
