@@ -3,37 +3,37 @@ kind: CronJob
 metadata:
   name: etcd-backup
   namespace: openshift-etcd
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
-  schedule: "0 1 * * *"
+  schedule: "0 1 * * *"   # Daily at 1 AM
   concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
+      backoffLimit: 1
       template:
         spec:
-          serviceAccountName: etcd-backup-sa   # 👈 THIS LINE
-          nodeSelector:
-            node-role.kubernetes.io/master: ""
-          tolerations:
-            - key: node-role.kubernetes.io/master
-              operator: Exists
-              effect: NoSchedule
+          serviceAccountName: etcd-backup-sa
           hostNetwork: true
           restartPolicy: OnFailure
           containers:
-            - name: backup
-              image: registry.redhat.io/openshift4/ose-cli:latest
-              securityContext:
-                privileged: true
-              command:
-                - /bin/bash
-                - -c
-                - |
-                  set -e
-                  mkdir -p /host/home/core/etcd-backup
-                  chroot /host /usr/local/bin/cluster-backup.sh /home/core/etcd-backup
-              volumeMounts:
-                - name: host
-                  mountPath: /host
+          - name: etcd-backup
+            image: registry.redhat.io/openshift4/ose-etcd:latest
+            command:
+              - /bin/bash
+              - -c
+              - |
+                set -e
+                echo "Starting ETCD backup at $(date)"
+                /usr/local/bin/cluster-backup.sh /home/core/etcd-backup
+                echo "ETCD backup completed at $(date)"
+            securityContext:
+              privileged: true
+            volumeMounts:
+              - name: host
+                mountPath: /host
           volumes:
             - name: host
               hostPath:
