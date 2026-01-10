@@ -1,10 +1,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: etcd-backup
-  namespace: openshift-etcd-backup
+  name: openshift-backup
+  namespace: ocp-etcd-backup
 spec:
-  schedule: "0 1 * * *"   # Daily 1 AM
+  schedule: "0 */6 * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -13,20 +13,20 @@ spec:
       backoffLimit: 0
       template:
         spec:
-          serviceAccountName: etcd-backup-sa
+          serviceAccountName: openshift-backup
           restartPolicy: Never
           containers:
-          - name: etcd-backup
+          - name: backup
             image: registry.redhat.io/openshift4/ose-cli:latest
             command:
             - /bin/bash
             - -c
             - |
-              set -e
               echo "Starting ETCD backup..."
-              oc get nodes -l node-role.kubernetes.io/master --no-headers -o name | head -n 1 | xargs -I {} \
-                oc debug {} --to-namespace=openshift-etcd-backup -- bash -c '
-                  mkdir -p /host/home/core/etcd-backup &&
-                  chroot /host /usr/local/bin/cluster-backup.sh /home/core/etcd-backup
-                '
-              echo "ETCD backup completed"
+              oc get nodes -l node-role.kubernetes.io/master --no-headers -o name | head -n 1 | \
+              xargs -I {} oc debug {} --to-namespace=ocp-etcd-backup -- bash -c '
+                mkdir -p /host/home/core/backup &&
+                chroot /host /usr/local/bin/cluster-backup.sh /home/core/backup &&
+                chroot /host find /home/core/backup -type f -mtime +7 -delete
+              '
+              echo "ETCD backup completed."
