@@ -2,22 +2,19 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: etcd-backup
-  namespace: openshift-etcd
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  namespace: openshift-etcd-backup
 spec:
-  schedule: "0 1 * * *"
+  schedule: "0 1 * * *"   # daily 1 AM
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
-      backoffLimit: 1
+      backoffLimit: 0
       template:
         spec:
           serviceAccountName: etcd-backup-sa
           restartPolicy: Never
-          hostPID: true
           containers:
           - name: etcd-backup
             image: registry.redhat.io/openshift4/ose-etcd:latest
@@ -25,12 +22,14 @@ spec:
             - /bin/bash
             - -c
             - |
-              chroot /host /usr/local/bin/cluster-backup.sh /home/core/etcd-backup
+              set -e
+              echo "Starting ETCD backup..."
+              /usr/local/bin/cluster-backup.sh /backup
+              echo "Backup completed"
             volumeMounts:
-            - name: host
-              mountPath: /host
+            - name: backup
+              mountPath: /backup
           volumes:
-          - name: host
-            hostPath:
-              path: /
-              type: Directory
+          - name: backup
+            persistentVolumeClaim:
+              claimName: etcd-backup-pvc
