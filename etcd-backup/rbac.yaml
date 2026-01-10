@@ -1,21 +1,29 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: etcd-backup-role
+  name: etcd-backup-clusterrole
 rules:
-- apiGroups: [""]
-  resources: ["nodes"]
-  verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources:
+      - pods
+      - pods/log
+    verbs: ["get", "list", "create", "delete", "watch"]
+  - apiGroups: [""]
+    resources:
+      - nodes
+    verbs: ["get", "list"]
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: etcd-backup-rolebinding
+  name: etcd-backup-clusterrolebinding
 subjects:
-- kind: ServiceAccount
-  name: etcd-backup-sa
-  namespace: openshift-etcd-backup
+  - kind: ServiceAccount
+    name: etcd-backup-sa
+    namespace: openshift-etcd-backup
 roleRef:
   kind: ClusterRole
-  name: etcd-backup-role
+  name: etcd-backup-clusterrole
   apiGroup: rbac.authorization.k8s.io
+
