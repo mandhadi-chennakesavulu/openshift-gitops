@@ -6,7 +6,8 @@ resources:
   - pvc.yaml
   - serviceaccount.yaml
   - cronjob.yaml
-  - rbac/clusterrole.yaml
-  - rbac/clusterrolebinding.yaml
-  - rbac/debug-clusterrole.yaml
-  - rbac/debug-clusterrolebinding.yaml
+  - rbac/clusterrole-etcd-backup.yaml
+  - rbac/clusterrolebinding-etcd-backup.yaml
+  - rbac/clusterrole-etcd-backup-debug.yaml
+  - rbac/clusterrolebinding-etcd-backup-debug.yaml
+
