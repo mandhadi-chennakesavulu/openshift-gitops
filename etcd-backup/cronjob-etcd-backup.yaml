@@ -6,7 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
-  schedule: "0 1 * * *"   # Daily at 1 AM
+  schedule: "0 1 * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -16,26 +16,21 @@ spec:
       template:
         spec:
           serviceAccountName: etcd-backup-sa
-          hostNetwork: true
-          restartPolicy: OnFailure
+          restartPolicy: Never
+          hostPID: true
           containers:
           - name: etcd-backup
             image: registry.redhat.io/openshift4/ose-etcd:latest
             command:
-              - /bin/bash
-              - -c
-              - |
-                set -e
-                echo "Starting ETCD backup at $(date)"
-                /usr/local/bin/cluster-backup.sh /home/core/etcd-backup
-                echo "ETCD backup completed at $(date)"
-            securityContext:
-              privileged: true
+            - /bin/bash
+            - -c
+            - |
+              chroot /host /usr/local/bin/cluster-backup.sh /home/core/etcd-backup
             volumeMounts:
-              - name: host
-                mountPath: /host
-          volumes:
             - name: host
-              hostPath:
-                path: /
-                type: Directory
+              mountPath: /host
+          volumes:
+          - name: host
+            hostPath:
+              path: /
+              type: Directory
