@@ -4,13 +4,13 @@ metadata:
   name: etcd-backup
   namespace: openshift-etcd-backup
 spec:
-  schedule: "0 1 * * *"   # Daily at 1 AM
+  schedule: "0 1 * * *"   # Daily 1 AM
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
-      backoffLimit: 1
+      backoffLimit: 0
       template:
         spec:
           serviceAccountName: etcd-backup-sa
@@ -19,20 +19,14 @@ spec:
           - name: etcd-backup
             image: registry.redhat.io/openshift4/ose-cli:latest
             command:
-              - /bin/bash
-              - -c
-              - |
-                echo "Starting ETCD backup via oc debug..."
-                oc get nodes -l node-role.kubernetes.io/master --no-headers -o name | head -n 1 | \
-                xargs -I {} oc debug {} --to-namespace=openshift-etcd-backup -- bash -c '
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "Starting ETCD backup..."
+              oc get nodes -l node-role.kubernetes.io/master --no-headers -o name | head -n 1 | xargs -I {} \
+                oc debug {} --to-namespace=openshift-etcd-backup -- bash -c '
                   mkdir -p /host/home/core/etcd-backup &&
                   chroot /host /usr/local/bin/cluster-backup.sh /home/core/etcd-backup
                 '
-                echo "ETCD backup completed."
-            volumeMounts:
-            - name: backup
-              mountPath: /home/core/etcd-backup
-          volumes:
-          - name: backup
-            persistentVolumeClaim:
-              claimName: etcd-backup-pvc
+              echo "ETCD backup completed"

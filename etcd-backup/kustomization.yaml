@@ -5,8 +5,7 @@ resources:
   - namespace.yaml
   - pvc.yaml
   - serviceaccount.yaml
+  - rbac.yaml
+  - scc.yaml
   - cronjob.yaml
-  - rbac/clusterrole.yaml
-  - rbac/clusterrolebinding.yaml
-  - rbac/debug-clusterrole.yaml
-  - rbac/debug-clusterrolebinding.yaml
+
