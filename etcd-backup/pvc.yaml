@@ -5,8 +5,8 @@ metadata:
   namespace: openshift-etcd-backup
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: 50Gi
   storageClassName: lvms-vg1
